@@ -1,7 +1,23 @@
 
 #include "philo_one.h"
 
-void monitor(void)
+int			prepare_to_exit(int status)
+{
+	int i;
+
+	i = 0;
+	while (i < g_config.num_of_philo)
+	{
+		pthread_mutex_destroy(&g_forks[i]);
+		++i;
+	}
+	free(g_forks);
+	free(g_philosophers);
+	free(g_threads);
+	return (status);
+}
+
+static int	monitor(void)
 {
 	struct timeval	time;
 	int				i;
@@ -11,33 +27,36 @@ void monitor(void)
 		i = 0;
 		while (i < g_config.num_of_philo)
 		{
-			gettimeofday(&time, NULL);
-			if ((time.tv_sec * 1000 + time.tv_usec / 1000 - g_philosophers[i].time_last_eating) >= g_config.time_to_die)
+			if (gettimeofday(&time, NULL) != 0)
+				return (1);
+			if ((time.tv_sec * 1000 + time.tv_usec / 1000 - \
+					g_philosophers[i].time_last_eating) >= g_config.time_to_die)
 			{
 				print_log("died", g_philosophers[i].number);
-				return ;
+				return (0);
 			}
 			++i;
 		}
 	}
+	return (0);
 }
 
 int main(int argc, char **argv)
 {
-	int i;
-
 	if (argc < 5 || argc > 7)
 	{
 		ft_putendl_fd("Error. Invalid arguments", 1);
 		return (0);
 	}
-	initialization(argc, argv);
-	i = 0;
-	while (i < g_config.num_of_philo)
+	if (initialization(argc, argv))
 	{
-		pthread_create(&g_threads[i], NULL, life_cycle, (void *)&g_philosophers[i]);
-		++i;
+		ft_putendl_fd("Fatal error.", 1);
+		return (1);
 	}
-	monitor();
-	return 0;
+	if (monitor())
+	{
+		ft_putendl_fd("Fatal error.", 1);
+		return (prepare_to_exit(1));
+	}
+	return (prepare_to_exit(0));
 }

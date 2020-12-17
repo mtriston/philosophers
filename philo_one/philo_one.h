@@ -46,12 +46,13 @@ pthread_mutex_t		g_print;
 t_config			g_config;
 
 void	*life_cycle(void *arg);
-void	print_log(char *message, unsigned number);
+int		print_log(char *message, unsigned number);
 int		ft_atoi(const char *nptr);
 void	ft_putchar_fd(char c, int fd);
 void	ft_putnbr_fd(int n, int fd);
 void	ft_putendl_fd(char *s, int fd);
-void	initialization(int argc, char **argv);
+int		initialization(int argc, char **argv);
+int		prepare_to_exit(int status);
 
 
 #endif

@@ -61,17 +61,21 @@ int		ft_atoi(const char *nptr)
 	return ((int)(num * sign));
 }
 
-void 	print_log(char *message, unsigned number)
+int 	print_log(char *message, unsigned number)
 {
 	struct timeval time;
 
-	pthread_mutex_lock(&g_print);
-	gettimeofday(&time, NULL);
+	if (pthread_mutex_lock(&g_print) != 0)
+		return (1);
+	if (gettimeofday(&time, NULL) != 0)
+		return (1);
 	ft_putnbr_fd(time.tv_sec * 1000 + time.tv_usec / 1000 - g_config.start, 1);
 	ft_putchar_fd(' ', 1);
 	ft_putnbr_fd(number + 1, 1);
 	ft_putchar_fd(' ', 1);
 	ft_putendl_fd(message, 1);
-	pthread_mutex_unlock(&g_print);
+	if (pthread_mutex_unlock(&g_print) != 0)
+		return (1);
+	return (0);
 }
 
