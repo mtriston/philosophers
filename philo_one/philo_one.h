@@ -13,7 +13,6 @@
 #ifndef PHILOSOPHERS_PHILO_ONE_H
 # define PHILOSOPHERS_PHILO_ONE_H
 
-# include <stdio.h>
 # include <stdlib.h>
 # include <pthread.h>
 # include <unistd.h>
@@ -46,7 +45,12 @@ pthread_mutex_t		*g_forks;
 pthread_mutex_t		g_print;
 t_config			g_config;
 
+void	*life_cycle(void *arg);
+void	print_log(char *message, unsigned number);
 int		ft_atoi(const char *nptr);
+void	ft_putchar_fd(char c, int fd);
+void	ft_putnbr_fd(int n, int fd);
+void	ft_putendl_fd(char *s, int fd);
 void	initialization(int argc, char **argv);
 
 

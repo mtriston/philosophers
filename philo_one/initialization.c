@@ -14,7 +14,7 @@
 
 static void forks_init(void)
 {
-	unsigned i;
+	int i;
 
 	i = 0;
 	g_forks = malloc(sizeof(pthread_mutex_t) * g_config.num_of_philo);
@@ -27,7 +27,7 @@ static void forks_init(void)
 
 static void	philosophers_init(void)
 {
-	unsigned	i;
+	int	i;
 
 	i = 0;
 	g_philosophers = malloc(sizeof(t_philosopher) * g_config.num_of_philo);
@@ -39,7 +39,7 @@ static void	philosophers_init(void)
 		g_philosophers[i].right_fork = i == (g_config.num_of_philo - 1) ? g_forks[0] : g_forks[i + 1];
 		g_philosophers[i].busy = 0;
 		g_philosophers[i].man_of_the_left = i == (g_config.num_of_philo - 1) ? &g_philosophers[0] : &g_philosophers[i + 1];
-		g_philosophers->iterations = g_config.iterations;
+		g_philosophers[i].iterations = g_config.iterations;
 		++i;
 	}
 }
