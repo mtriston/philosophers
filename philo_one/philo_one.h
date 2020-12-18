@@ -37,6 +37,7 @@ typedef struct		s_config
 	int 			time_to_die;
 	long 			start;
 	int 			iterations;
+	int				exit;
 }					t_config;
 
 t_philosopher		*g_philosophers;
@@ -52,7 +53,7 @@ void	ft_putchar_fd(char c, int fd);
 void	ft_putnbr_fd(int n, int fd);
 void	ft_putendl_fd(char *s, int fd);
 int		initialization(int argc, char **argv);
-int		prepare_to_exit(int status);
+void	*prepare_to_exit(void);
 
 
 #endif

@@ -85,6 +85,7 @@ static int	config_init(int argc, char **argv)
 	g_config.eating = ft_atoi(argv[3]);
 	g_config.sleeping = ft_atoi(argv[4]);
 	g_config.iterations = argc == 6 ? ft_atoi(argv[5]) : -1;
+	g_config.exit = 0;
 	return (0);
 }
 
