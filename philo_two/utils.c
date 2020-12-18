@@ -61,11 +61,11 @@ int		ft_atoi(const char *nptr)
 	return ((int)(num * sign));
 }
 
-int 	print_log(char *message, unsigned number)
+int 	print_log(char *message, int number)
 {
 	struct timeval time;
 
-	if (pthread_mutex_lock(&g_print) != 0)
+	if (sem_wait(g_print) != 0)
 		return (1);
 	if (gettimeofday(&time, NULL) != 0)
 		return (1);
@@ -74,7 +74,7 @@ int 	print_log(char *message, unsigned number)
 	ft_putnbr_fd(number + 1, 1);
 	ft_putchar_fd(' ', 1);
 	ft_putendl_fd(message, 1);
-	if (pthread_mutex_unlock(&g_print) != 0)
+	if (sem_post(g_print) != 0)
 		return (1);
 	return (0);
 }

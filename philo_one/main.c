@@ -39,7 +39,7 @@ static int	monitor(void)
 			++i;
 		}
 	}
-	return (0);
+	return (g_config.exit);
 }
 
 static int	check_args(int argc, char **argv)

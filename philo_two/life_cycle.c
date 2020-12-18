@@ -2,22 +2,21 @@
 
 static int	get_fork(t_philosopher *man)
 {
-	while (1)
-	{
-		if (!man->man_of_the_left->busy)
-		{
-			if (pthread_mutex_lock(&man->left_fork) != 0)
-				return (1);
-			man->busy = 1;
-			if (print_log("has taken a fork!", man->number))
-				return (1);
-			if (pthread_mutex_lock(&man->right_fork) != 0)
-				return (1);
-			if (print_log("has taken a fork!", man->number))
-				return (1);
-			return (0);	
-		}
-	}
+	if (sem_wait(g_block) != 0)
+		return (1);
+	if (sem_wait(g_forks) != 0)
+		return (1);
+	--(g_config.forks);
+	if (print_log("has taken a fork!", man->number))
+		return (1);
+	if (sem_wait(g_forks) != 0)
+		return (1);
+	--(g_config.forks);
+	if (print_log("has taken a fork!", man->number))
+		return (1);
+	if (sem_post(g_block) != 0)
+		return (1);
+	return (0);
 }
 
 static int	eating(t_philosopher *man)
@@ -31,11 +30,12 @@ static int	eating(t_philosopher *man)
 	man->time_last_eating = time.tv_sec * 1000 + time.tv_usec / 1000;
 	if (usleep(g_config.eating * 1000) != 0)
 		return (1);
-	if (pthread_mutex_unlock(&man->right_fork) != 0)
+	if (sem_post(g_forks) != 0)
 		return (1);
-	if (pthread_mutex_unlock(&man->left_fork) != 0)
+	++(g_config.forks);
+	if (sem_post(g_forks) != 0)
 		return (1);
-	man->busy = 0;
+	++(g_config.forks);
 	return (0);
 }
 
@@ -54,7 +54,10 @@ void		*life_cycle(void *arg)
 
 	man = (t_philosopher *)arg;
 	if (pthread_detach(g_threads[man->number]) != 0)
-		return (prepare_to_exit());
+	{
+		g_config.exit = 1;
+		return ((void *)0);
+	}
 	while (man->iterations != 0)
 	{
 		if (get_fork(man) || eating(man) || sleeping(man) || \

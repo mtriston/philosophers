@@ -6,26 +6,26 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/11 22:42:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/16 20:44:51 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/18 20:55:00 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_two.h"
 
-static int forks_init(void)
+static int	semaphore_init(void)
 {
-	int i;
-
-	i = 0;
-	g_forks = malloc(sizeof(pthread_mutex_t) * g_config.num_of_philo);
-	if (g_forks == NULL)
+	sem_unlink(SEM_PRINT);
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_BLOCK);
+	g_forks = sem_open(SEM_FORKS, O_CREAT, 0644, g_config.num_of_philo);
+	if (g_forks == SEM_FAILED)
 		return (1);
-	while (i < g_config.num_of_philo)
-	{
-		if (pthread_mutex_init(&g_forks[i], NULL) != 0)
-			return (1);
-		++i;
-	}
+	g_print = sem_open(SEM_PRINT, O_CREAT, 0644, 1);
+	if (g_print == SEM_FAILED)
+		return (1);
+	g_block = sem_open(SEM_BLOCK, O_CREAT, 0644, 1);
+	if (g_forks == SEM_FAILED)
+		return (1);
 	return (0);
 }
 
@@ -59,13 +59,6 @@ static int	philosophers_init(void)
 	{
 		g_philosophers[i].number = i;
 		g_philosophers[i].time_last_eating = g_config.start;
-		g_philosophers[i].left_fork = i == 0 ? \
-							g_forks[g_config.num_of_philo - 1] : g_forks[i - 1];
-		g_philosophers[i].right_fork = i == (g_config.num_of_philo - 1) ? \
-									   				g_forks[0] : g_forks[i + 1];
-		g_philosophers[i].busy = 0;
-		g_philosophers[i].man_of_the_left = i == (g_config.num_of_philo - 1) ? \
-									&g_philosophers[0] : &g_philosophers[i + 1];
 		g_philosophers[i].iterations = g_config.iterations;
 		++i;
 	}
@@ -85,6 +78,7 @@ static int	config_init(int argc, char **argv)
 	g_config.eating = ft_atoi(argv[3]);
 	g_config.sleeping = ft_atoi(argv[4]);
 	g_config.iterations = argc == 6 ? ft_atoi(argv[5]) : -1;
+	g_config.forks = g_config.num_of_philo;
 	g_config.exit = 0;
 	return (0);
 }
@@ -93,9 +87,9 @@ int initialization(int argc, char **argv)
 {	
 	if (config_init(argc, argv))
 		return (1);
-	if (forks_init())
-		return (1);
 	if (philosophers_init())
+		return (1);
+	if (semaphore_init())
 		return (1);
 	g_config.iterations = g_config.iterations == -1 ? \
 			g_config.iterations : g_config.iterations * g_config.num_of_philo;

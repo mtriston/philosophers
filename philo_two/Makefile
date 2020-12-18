@@ -11,7 +11,7 @@ HEADER = philo_two.h
 
 CC = gcc
 
-CC_FLAGS = -Wall -Wextra -Werror -pthread
+CC_FLAGS = -Wall -Wextra -Werror -pthread -g
 
 all: $(NAME)
 

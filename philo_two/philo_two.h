@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/11 22:37:54 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/15 22:16:05 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/18 20:55:00 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,18 +15,20 @@
 
 # include <stdlib.h>
 # include <pthread.h>
+# include <semaphore.h>
 # include <unistd.h>
 # include <sys/time.h>
+# include <sys/stat.h>
+# include <fcntl.h>
+# define SEM_FORKS "/sem_forks"
+# define SEM_PRINT "/sem_print"
+# define SEM_BLOCK "/sem_block"
 
 typedef struct				s_philosopher
 {
-	unsigned				number;
+	int 					number;
 	long					time_last_eating;
-	pthread_mutex_t			left_fork;
-	pthread_mutex_t			right_fork;
-	int 					busy;
 	int 					iterations;
-	struct s_philosopher	*man_of_the_left;
 }							t_philosopher;
 
 typedef struct		s_config
@@ -38,16 +40,18 @@ typedef struct		s_config
 	long 			start;
 	int 			iterations;
 	int				exit;
+	int 			forks;
 }					t_config;
 
 t_philosopher		*g_philosophers;
 pthread_t			*g_threads;
-pthread_mutex_t		*g_forks;
-pthread_mutex_t		g_print;
+sem_t				*g_forks;
+sem_t				*g_print;
+sem_t				*g_block;
 t_config			g_config;
 
 void	*life_cycle(void *arg);
-int		print_log(char *message, unsigned number);
+int		print_log(char *message, int number);
 int		ft_atoi(const char *nptr);
 void	ft_putchar_fd(char c, int fd);
 void	ft_putnbr_fd(int n, int fd);

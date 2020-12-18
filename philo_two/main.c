@@ -2,15 +2,10 @@
 
 void	*prepare_to_exit(void)
 {
-	int i;
-
-	i = 0;
-	while (i < g_config.num_of_philo)
-	{
-		pthread_mutex_destroy(&g_forks[i]);
-		++i;
-	}
-	free(g_forks);
+	sem_close(g_forks);
+	sem_close(g_print);
+	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_PRINT);
 	free(g_philosophers);
 	free(g_threads);
 	return ((void *)0);
@@ -38,7 +33,7 @@ static int	monitor(void)
 			++i;
 		}
 	}
-	return (0);
+	return (g_config.exit);
 }
 
 static int	check_args(int argc, char **argv)
