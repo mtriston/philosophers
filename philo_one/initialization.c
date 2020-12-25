@@ -6,13 +6,13 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/11 22:42:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/16 20:44:51 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/25 15:40:40 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_one.h"
 
-static int forks_init(void)
+static int	forks_init(void)
 {
 	int i;
 
@@ -34,7 +34,7 @@ static int	threads_init(void)
 	int i;
 
 	i = 0;
-	g_threads = malloc(sizeof(pthread_mutex_t) * g_config.num_of_philo);
+	g_threads = malloc(sizeof(pthread_t) * g_config.num_of_philo);
 	if (g_threads == NULL)
 		return (1);
 	while (i < g_config.num_of_philo)
@@ -59,13 +59,10 @@ static int	philosophers_init(void)
 	{
 		g_philosophers[i].number = i;
 		g_philosophers[i].time_last_eating = g_config.start;
-		g_philosophers[i].left_fork = i == 0 ? \
-							g_forks[g_config.num_of_philo - 1] : g_forks[i - 1];
+		g_philosophers[i].left_fork = i == (g_config.num_of_philo - 1) ? \
+							g_forks[0] : g_forks[i];
 		g_philosophers[i].right_fork = i == (g_config.num_of_philo - 1) ? \
-									   				g_forks[0] : g_forks[i + 1];
-		g_philosophers[i].busy = 0;
-		g_philosophers[i].man_of_the_left = i == (g_config.num_of_philo - 1) ? \
-									&g_philosophers[0] : &g_philosophers[i + 1];
+												g_forks[i] : g_forks[i + 1];
 		g_philosophers[i].iterations = g_config.iterations;
 		++i;
 	}
@@ -74,8 +71,7 @@ static int	philosophers_init(void)
 
 static int	config_init(int argc, char **argv)
 {
-
-	struct		timeval time;
+	struct timeval time;
 
 	if (gettimeofday(&time, NULL) != 0)
 		return (1);
@@ -86,11 +82,12 @@ static int	config_init(int argc, char **argv)
 	g_config.sleeping = ft_atoi(argv[4]);
 	g_config.iterations = argc == 6 ? ft_atoi(argv[5]) : -1;
 	g_config.exit = 0;
+	g_config.someone_die = 0;
 	return (0);
 }
 
-int initialization(int argc, char **argv)
-{	
+int			initialization(int argc, char **argv)
+{
 	if (config_init(argc, argv))
 		return (1);
 	if (forks_init())

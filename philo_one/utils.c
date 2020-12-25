@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/12/24 18:39:17 by mtriston          #+#    #+#             */
+/*   Updated: 2020/12/24 18:39:20 by mtriston         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo_one.h"
 
 void	ft_putchar_fd(char c, int fd)
@@ -5,7 +17,7 @@ void	ft_putchar_fd(char c, int fd)
 	write(fd, &c, 1);
 }
 
-void		ft_putnbr_fd(int n, int fd)
+void	ft_putnbr_fd(int n, int fd)
 {
 	if (n <= -10)
 	{
@@ -61,10 +73,12 @@ int		ft_atoi(const char *nptr)
 	return ((int)(num * sign));
 }
 
-int 	print_log(char *message, unsigned number)
+int		print_log(char *message, unsigned number)
 {
 	struct timeval time;
 
+	if (g_config.someone_die)
+		return (0);
 	if (pthread_mutex_lock(&g_print) != 0)
 		return (1);
 	if (gettimeofday(&time, NULL) != 0)
@@ -78,4 +92,3 @@ int 	print_log(char *message, unsigned number)
 		return (1);
 	return (0);
 }
-

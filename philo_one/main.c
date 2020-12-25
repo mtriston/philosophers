@@ -1,16 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/12/24 18:38:41 by mtriston          #+#    #+#             */
+/*   Updated: 2020/12/25 15:48:58 by mtriston         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philo_one.h"
 
-void	*prepare_to_exit(void)
+void		*prepare_to_exit(void)
 {
 	int i;
 
 	i = 0;
 	while (i < g_config.num_of_philo)
-	{
-		pthread_mutex_destroy(&g_forks[i]);
-		++i;
-	}
+		pthread_join(g_threads[i++], NULL);
+	i = 0;
+	while (i < g_config.num_of_philo)
+		pthread_mutex_destroy(&g_forks[i++]);
+	pthread_mutex_destroy(&g_print);
 	free(g_forks);
 	free(g_philosophers);
 	free(g_threads);
@@ -33,8 +45,10 @@ static int	monitor(void)
 				g_philosophers[i].time_last_eating) >= g_config.time_to_die \
 				&& g_philosophers[i].iterations != 0)
 			{
-				print_log("died", g_philosophers[i].number);
-				return (0);
+				if (print_log("died", g_philosophers[i].number))
+					g_config.exit = 1;
+				g_config.someone_die = 1;
+				return (g_config.exit);
 			}
 			++i;
 		}
@@ -62,7 +76,7 @@ static int	check_args(int argc, char **argv)
 	return (0);
 }
 
-int main(int argc, char **argv)
+int			main(int argc, char **argv)
 {
 	if (argc < 5 || argc > 7 || check_args(argc, argv))
 	{
