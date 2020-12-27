@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/11 22:37:54 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/24 19:24:04 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/27 12:58:38 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,7 @@ typedef struct				s_philosopher
 	long					time_last_eating;
 	pthread_mutex_t			left_fork;
 	pthread_mutex_t			right_fork;
-	int						busy;
 	int						iterations;
-	struct s_philosopher	*man_of_the_left;
 }							t_philosopher;
 
 typedef struct				s_config
@@ -45,6 +43,7 @@ t_philosopher				*g_philosophers;
 pthread_t					*g_threads;
 pthread_mutex_t				*g_forks;
 pthread_mutex_t				g_print;
+pthread_mutex_t				g_block;
 t_config					g_config;
 
 void						*life_cycle(void *arg);

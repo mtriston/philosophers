@@ -29,11 +29,15 @@ static int	eating(t_philosopher *man)
 {
 	struct timeval time;
 
+	if (pthread_mutex_lock(&g_block) != 0)
+		return (1);
 	if (print_log("is eating!", man->number))
 		return (1);
 	if (gettimeofday(&time, NULL) != 0)
 		return (1);
 	man->time_last_eating = time.tv_sec * 1000 + time.tv_usec / 1000;
+	if (pthread_mutex_unlock(&g_block) != 0)
+		return (1);
 	if (usleep(g_config.eating * 1000) != 0)
 		return (1);
 	if (pthread_mutex_unlock(&man->right_fork) != 0)

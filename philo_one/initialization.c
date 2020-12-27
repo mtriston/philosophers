@@ -12,7 +12,7 @@
 
 #include "philo_one.h"
 
-static int	forks_init(void)
+static int	mutex_init(void)
 {
 	int i;
 
@@ -26,6 +26,10 @@ static int	forks_init(void)
 			return (1);
 		++i;
 	}
+	if (pthread_mutex_init(&g_print, NULL) != 0)
+		return (1);
+	if (pthread_mutex_init(&g_block, NULL) != 0)
+		return (1);
 	return (0);
 }
 
@@ -90,7 +94,7 @@ int			initialization(int argc, char **argv)
 {
 	if (config_init(argc, argv))
 		return (1);
-	if (forks_init())
+	if (mutex_init())
 		return (1);
 	if (philosophers_init())
 		return (1);

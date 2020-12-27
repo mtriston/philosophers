@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/24 18:38:41 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/25 15:48:58 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/27 13:32:34 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,39 +18,58 @@ void		*prepare_to_exit(void)
 
 	i = 0;
 	while (i < g_config.num_of_philo)
-		pthread_join(g_threads[i++], NULL);
+		if (pthread_join(g_threads[i++], NULL) != 0)
+			g_config.exit = 1;
 	i = 0;
 	while (i < g_config.num_of_philo)
-		pthread_mutex_destroy(&g_forks[i++]);
-	pthread_mutex_destroy(&g_print);
+		if (pthread_mutex_destroy(&g_forks[i++]) != 0)
+			g_config.exit = 1;
+	if (pthread_mutex_destroy(&g_print) != 0)
+		g_config.exit = 1;
+	if (pthread_mutex_destroy(&g_block) != 0)
+		g_config.exit = 1;
 	free(g_forks);
 	free(g_philosophers);
 	free(g_threads);
 	return ((void *)0);
 }
 
-static int	monitor(void)
+static int	is_philo_dead(t_philosopher *man)
 {
 	struct timeval	time;
+
+	if (gettimeofday(&time, NULL) != 0)
+		return (1);
+	if (pthread_mutex_lock(&g_block) != 0)
+		return (1);
+	if ((time.tv_sec * 1000 + time.tv_usec / 1000 - \
+				man->time_last_eating) >= g_config.time_to_die \
+				&& man->iterations != 0)
+	{
+		if (print_log("died", man->number))
+			return (1);
+		g_config.someone_die = 1;
+		if (pthread_mutex_unlock(&g_block) != 0)
+			return (1);
+	}
+	else
+		pthread_mutex_unlock(&g_block);
+	return (0);
+}
+
+static int	monitor(void)
+{
 	int				i;
 
-	while (g_config.iterations != 0 && g_config.exit == 0)
+	while (g_config.iterations != 0 && !g_config.exit && !g_config.someone_die)
 	{
 		i = 0;
 		while (i < g_config.num_of_philo)
 		{
-			if (gettimeofday(&time, NULL) != 0)
-				return (1);
-			if ((time.tv_sec * 1000 + time.tv_usec / 1000 - \
-				g_philosophers[i].time_last_eating) >= g_config.time_to_die \
-				&& g_philosophers[i].iterations != 0)
-			{
-				if (print_log("died", g_philosophers[i].number))
-					g_config.exit = 1;
-				g_config.someone_die = 1;
-				return (g_config.exit);
-			}
+			if (is_philo_dead(&g_philosophers[i]) == 1)
+				g_config.exit = 1;
 			++i;
+			usleep(50);
 		}
 	}
 	return (g_config.exit);
