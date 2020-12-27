@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/24 18:38:41 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/27 13:32:34 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/27 15:00:53 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,9 @@ static int	is_philo_dead(t_philosopher *man)
 		if (print_log("died", man->number))
 			return (1);
 		g_config.someone_die = 1;
-		if (pthread_mutex_unlock(&g_block) != 0)
-			return (1);
 	}
-	else
-		pthread_mutex_unlock(&g_block);
+	if (pthread_mutex_unlock(&g_block) != 0)
+		return (1);
 	return (0);
 }
 
@@ -100,7 +98,7 @@ int			main(int argc, char **argv)
 	if (argc < 5 || argc > 7 || check_args(argc, argv))
 	{
 		ft_putendl_fd("Error. Invalid arguments", 1);
-		return (0);
+		return (1);
 	}
 	if (initialization(argc, argv))
 	{

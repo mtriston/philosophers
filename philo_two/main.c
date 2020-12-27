@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/27 15:08:19 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/27 15:08:20 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/27 15:08:39 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int			main(int argc, char **argv)
 	if (argc < 5 || argc > 7 || check_args(argc, argv))
 	{
 		ft_putendl_fd("Error. Invalid arguments", 1);
-		return (0);
+		return (1);
 	}
 	if (initialization(argc, argv))
 	{

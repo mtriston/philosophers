@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/11 22:42:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/27 15:08:00 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/27 15:08:10 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,10 @@ static int	semaphore_init(void)
 	if (g_print == SEM_FAILED)
 		return (1);
 	g_waiter = sem_open(SEM_WAITER, O_CREAT, 0644, 1);
-	if (g_forks == SEM_FAILED)
+	if (g_waiter == SEM_FAILED)
 		return (1);
 	g_block = sem_open(SEM_BLOCK, O_CREAT, 0644, 1);
-	if (g_forks == SEM_FAILED)
+	if (g_block == SEM_FAILED)
 		return (1);
 	return (0);
 }
