@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/11 22:42:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/18 20:55:00 by mtriston         ###   ########.fr       */
+/*   Updated: 2020/12/27 15:08:00 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,16 @@ static int	semaphore_init(void)
 {
 	sem_unlink(SEM_PRINT);
 	sem_unlink(SEM_FORKS);
+	sem_unlink(SEM_WAITER);
 	sem_unlink(SEM_BLOCK);
 	g_forks = sem_open(SEM_FORKS, O_CREAT, 0644, g_config.num_of_philo);
 	if (g_forks == SEM_FAILED)
 		return (1);
 	g_print = sem_open(SEM_PRINT, O_CREAT, 0644, 1);
 	if (g_print == SEM_FAILED)
+		return (1);
+	g_waiter = sem_open(SEM_WAITER, O_CREAT, 0644, 1);
+	if (g_forks == SEM_FAILED)
 		return (1);
 	g_block = sem_open(SEM_BLOCK, O_CREAT, 0644, 1);
 	if (g_forks == SEM_FAILED)
@@ -67,8 +71,7 @@ static int	philosophers_init(void)
 
 static int	config_init(int argc, char **argv)
 {
-
-	struct		timeval time;
+	struct timeval	time;
 
 	if (gettimeofday(&time, NULL) != 0)
 		return (1);
@@ -78,13 +81,13 @@ static int	config_init(int argc, char **argv)
 	g_config.eating = ft_atoi(argv[3]);
 	g_config.sleeping = ft_atoi(argv[4]);
 	g_config.iterations = argc == 6 ? ft_atoi(argv[5]) : -1;
-	g_config.forks = g_config.num_of_philo;
 	g_config.exit = 0;
+	g_config.someone_died = 0;
 	return (0);
 }
 
-int initialization(int argc, char **argv)
-{	
+int			initialization(int argc, char **argv)
+{
 	if (config_init(argc, argv))
 		return (1);
 	if (philosophers_init())
