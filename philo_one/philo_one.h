@@ -22,8 +22,8 @@ typedef struct				s_philosopher
 {
 	unsigned				number;
 	long					time_last_eating;
-	pthread_mutex_t			left_fork;
-	pthread_mutex_t			right_fork;
+	pthread_mutex_t			*left_fork;
+	pthread_mutex_t			*right_fork;
 	int						iterations;
 }							t_philosopher;
 

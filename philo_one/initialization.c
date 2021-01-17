@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/11 22:42:56 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/25 15:40:40 by mtriston         ###   ########.fr       */
+/*   Updated: 2021/01/15 19:33:37 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,18 @@ static int	threads_init(void)
 		if (pthread_create(&g_threads[i], NULL, life_cycle,\
 										(void *)&g_philosophers[i]) != 0)
 			return (1);
-		++i;
+		if (i == 0)
+			usleep(50);
+		i += 2;
+	}
+	usleep(50);
+	i = 1;
+	while (i < g_config.num_of_philo)
+	{
+		if (pthread_create(&g_threads[i], NULL, life_cycle,\
+										(void *)&g_philosophers[i]) != 0)
+			return (1);
+		i += 2;
 	}
 	return (0);
 }
@@ -63,10 +74,9 @@ static int	philosophers_init(void)
 	{
 		g_philosophers[i].number = i;
 		g_philosophers[i].time_last_eating = g_config.start;
-		g_philosophers[i].left_fork = i == (g_config.num_of_philo - 1) ? \
-							g_forks[0] : g_forks[i];
-		g_philosophers[i].right_fork = i == (g_config.num_of_philo - 1) ? \
-												g_forks[i] : g_forks[i + 1];
+		g_philosophers[i].left_fork = &(g_forks[i]);
+		g_philosophers[i].right_fork = \
+					&(g_forks[(i + 1) % g_config.num_of_philo]);
 		g_philosophers[i].iterations = g_config.iterations;
 		++i;
 	}

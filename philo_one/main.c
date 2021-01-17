@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/24 18:38:41 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/27 15:00:53 by mtriston         ###   ########.fr       */
+/*   Updated: 2021/01/15 19:31:22 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void		*prepare_to_exit(void)
 
 	i = 0;
 	while (i < g_config.num_of_philo)
-		if (pthread_join(g_threads[i++], NULL) != 0)
+		if (pthread_detach(g_threads[i++]) != 0)
 			g_config.exit = 1;
 	i = 0;
 	while (i < g_config.num_of_philo)

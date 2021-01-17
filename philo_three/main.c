@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/27 18:10:43 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/27 18:12:04 by mtriston         ###   ########.fr       */
+/*   Updated: 2021/01/14 21:12:45 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ static int	prepare_to_exit(void)
 	i = 0;
 	while (i < g_config.num_of_philo)
 		kill(g_processes[i++], SIGKILL);
-	if (sem_close(g_forks) != 0 || sem_unlink(SEM_FORKS) != 0)
-		return (1);
 	if (sem_close(g_forks) != 0 || sem_unlink(SEM_FORKS) != 0)
 		return (1);
 	if (sem_close(g_print) != 0 || sem_unlink(SEM_PRINT) != 0)

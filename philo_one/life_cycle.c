@@ -6,7 +6,7 @@
 /*   By: mtriston <mtriston@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/24 18:37:35 by mtriston          #+#    #+#             */
-/*   Updated: 2020/12/25 15:45:45 by mtriston         ###   ########.fr       */
+/*   Updated: 2021/01/15 19:31:49 by mtriston         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 
 static int	get_fork(t_philosopher *man)
 {
-	if (pthread_mutex_lock(&man->left_fork) != 0)
+	if (pthread_mutex_lock(man->left_fork) != 0)
 		return (1);
 	if (print_log("has taken a fork!", man->number))
 		return (1);
-	if (pthread_mutex_lock(&man->right_fork) != 0)
+	if (pthread_mutex_lock(man->right_fork) != 0)
 		return (1);
 	if (print_log("has taken a fork!", man->number))
 		return (1);
@@ -40,9 +40,9 @@ static int	eating(t_philosopher *man)
 		return (1);
 	if (usleep(g_config.eating * 1000) != 0)
 		return (1);
-	if (pthread_mutex_unlock(&man->right_fork) != 0)
+	if (pthread_mutex_unlock(man->right_fork) != 0)
 		return (1);
-	if (pthread_mutex_unlock(&man->left_fork) != 0)
+	if (pthread_mutex_unlock(man->left_fork) != 0)
 		return (1);
 	return (0);
 }
